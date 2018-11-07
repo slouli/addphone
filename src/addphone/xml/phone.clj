@@ -5,7 +5,7 @@
 
 
 (defn addPhone
-  [name description loc line pt e164Mask]
+  [name description loc line e164Mask]
   {:name "addPhone"
    :xml (xml/element :ns:addPhone {:sequence "?"}
           (xml/element :phone {} 
@@ -27,7 +27,7 @@
               (xml/element :line {}
                 (xml/element :dirn {}
                   (xml/element :pattern {} line)
-                  (xml/element :routePartitionName {} pt))
+                  (xml/element :routePartitionName {} (str "PT-" loc "-Dev")))
                 (xml/element :display {} description)
                 (xml/element :displayAscii {} description)
                 (xml/element :e164Mask {} e164Mask)))))})

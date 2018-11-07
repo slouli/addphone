@@ -41,5 +41,21 @@
                         (echo "Checking if device profile exists... " deviceProfileExists? (:userId argmap)))))
     (cond 
       (false? proceed?) (println "Cannot proceed, verify the user/profile/extension are not already assigned")
-      :else (println (request americas deviceProfile/addDeviceProfile argmap)))))
+      :else (do
+              (println (request americas line/addLine argmap))
+              (println (request americas deviceProfile/addDeviceProfile argmap))
+              (println (request americas user/addUser argmap))
+              (println (request americas user/updateUser argmap))
+              (println)
+              (println "User Detail...")
+              (println "UserId: " (:userId argmap))
+              (println "Ext/PIN: " (:line argmap))
+              (println)
+              (println "IPC Details")
+              (println "-IP Communicator: " (str "SEP" (:userId argmap)))
+              (println "-TFTP Server 1: " "10.230.122.5")
+              (println "-TFTP Server 2: " "10.230.154.6")
+              (println)
+              (println "Voicemail PIN: 258369")
+              (println (str "set-aduser " (:userId argmap) " -replace @{'ipPhone'='*1" (:line argmap) "'}"))))))
 
