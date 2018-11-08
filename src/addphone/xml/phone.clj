@@ -4,12 +4,14 @@
             [addphone.xml.parseAxlResponse :as parse]))
 
 (defn getPhone
-  []
-  "TODO: IMPLEMENT GET PHONE METHOD FOR VALIDATION")
+  [name]
+  {:name "getPhone"                     
+   :xml (xml/element :ns:getPhone {:sequence "?"}
+          (xml/element :name {} name))})
 
 (defn phoneBase
   "Common parameters between the phones.  Should not call this method."
-  [{:keys [description loc]} & deviceXml]
+  [{:keys [description loc userLocale networkLocale]} & deviceXml]
   {:name "addPhone"                     
    :xml (xml/element :ns:addPhone {:sequence "?"}
           (xml/element :phone {}
@@ -20,7 +22,8 @@
             (xml/element :callingSearchSpaceName {} (str "CSS-" loc "-Device"))
             (xml/element :devicePoolName {} (str "DP-" loc))
             (xml/element :locationName {} (str "Loc-" loc))
-            (xml/element :userLocale {} "English United States")
+            (xml/element :userLocale {} userLocale)
+            (xml/element :networkLocale {} networkLocale)
             (xml/element :ownerUserName {} "americas-lic-user")            
             (xml/element :sipProfileName {} "Standard SIP Profile")            
             (xml/element :commonPhoneConfigName {} "Standard Common Phone Profile")
@@ -31,8 +34,8 @@
 (defmulti addPhone :phone)
 
 (defmethod addPhone :CSF
-  [{:keys [userId line description loc e164Mask]}]
-  (phoneBase {:description description :loc loc}
+  [{:keys [userId line description loc e164Mask userLocale networkLocale]}]
+  (phoneBase {:description description :loc loc :userLocale userLocale :networkLocale networkLocale}
     (xml/element :name {} (str "CSF" userId))
     (xml/element :product {} "Cisco Unified Client Services Framework")
     (xml/element :mediaResourceListName {} "MRL-CMS")
@@ -49,8 +52,8 @@
         (xml/element :e164Mask {} e164Mask)))))
 
 (defmethod addPhone :IPC
-  [{:keys [userId line description loc e164Mask]}]
-  (phoneBase {:description description :loc loc}
+  [{:keys [userId line description loc e164Mask userLocale networkLocale]}]
+  (phoneBase {:description description :loc loc :userLocale userLocale :networkLocale networkLocale}
     (xml/element :name {} (str "SEP" userId))
     (xml/element :product {} "Cisco IP Communicator")
     (xml/element :phoneTemplateName {} "OT 1 Line + Speed Dial - 7945 SIP")

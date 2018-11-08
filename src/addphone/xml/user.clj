@@ -10,7 +10,7 @@
                (xml/element :userid {} userId))})
 
 (defn addUser
-  [{:keys [userId line loc]}]
+  [{:keys [userId line loc userLocale]}]
   {:name "addUser"
    :xml (xml/element :ns:addUser {:sequence "?"}
           (xml/element :user {}
@@ -19,10 +19,10 @@
             (xml/element :pin {} line)
             (xml/element :mailid {} (str userId "@opentext.com"))
             (xml/element :telephoneNumber {} (str "*1" line))
-            (xml/element :userLocale {} "English United States")
+            (xml/element :userLocale {} userLocale)
             (xml/element :homeCluster {} "true")
-            ;;(xml/element :associatedDevices {}
-            ;;  (xml/element :device {} (str "CSF" userId)))
+            (xml/element :associatedDevices {}
+              (xml/element :device {} (str "CSF" userId)))
             (xml/element :phoneProfiles {} 
               (xml/element :profileName {} userId))
             (xml/element :defaultProfile {} userId)
