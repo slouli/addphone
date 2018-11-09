@@ -1,0 +1,6 @@
+{:Austin {:e164Mask "51274XXXXX" :userLocale "English United States" :networkLocale "United States" :phone :IPC :deviceProfile :8851}
+ :Montreal {:e164Mask "5149085406" :userLocale "French Canada" :networkLocale "Canada" :phone :CSF :deviceProfile :8851}
+ :RichmondHill {:e164Mask "90576XXXXX" :userLocale "English United States" :networkLocale "Canada" :phone :IPC :deviceProfile :7945}
+ :Southfield {:e164Mask "24848XXXXX" :userLocale "English United States" :networkLocale "United States" :phone :IPC :deviceProfile :8851}
+ :Toronto {:e164Mask "41695XXXXX" :userLocale "English United States" :networkLocale "Canada" :phone :IPC :deviceProfile :7945}}
+

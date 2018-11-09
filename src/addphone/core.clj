@@ -5,6 +5,7 @@
             [addphone.xml.user :as user]
             [addphone.xml.phone :as phone]
             [addphone.xml.parseAxlResponse :as parse]
+            [addphone.xml.extensionMobility :as em]
             [addphone.http.client :as client]
             [addphone.getResource :as rsc]))
 
@@ -64,4 +65,13 @@
               (println)
               (println "Voicemail PIN: 258369")
               (println (str "set-aduser " (:userId phone) " -replace @{'ipPhone'='*1" (:line phone) "'}"))))))
+
+
+
+;Extension mobility login function.  To run use:
+;lein run -m addphone.core/login name userId 
+(defn login
+  [& args]
+  (println (apply (partial request americas em/doDeviceLogin) args)))
+  
 

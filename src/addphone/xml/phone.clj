@@ -34,8 +34,8 @@
 (defmulti addPhone :phone)
 
 (defmethod addPhone :CSF
-  [{:keys [userId line description loc e164Mask userLocale networkLocale]}]
-  (phoneBase {:description description :loc loc :userLocale userLocale :networkLocale networkLocale}
+  [{:keys [userId line description loc e164Mask userLocale networkLocale] :as args}]
+  (phoneBase args
     (xml/element :name {} (str "CSF" userId))
     (xml/element :product {} "Cisco Unified Client Services Framework")
     (xml/element :mediaResourceListName {} "MRL-CMS")
@@ -52,8 +52,8 @@
         (xml/element :e164Mask {} e164Mask)))))
 
 (defmethod addPhone :IPC
-  [{:keys [userId line description loc e164Mask userLocale networkLocale]}]
-  (phoneBase {:description description :loc loc :userLocale userLocale :networkLocale networkLocale}
+  [{:keys [userId line description loc e164Mask userLocale networkLocale] :as args}]
+  (phoneBase args
     (xml/element :name {} (str "SEP" userId))
     (xml/element :product {} "Cisco IP Communicator")
     (xml/element :phoneTemplateName {} "OT 1 Line + Speed Dial - 7945 SIP")
