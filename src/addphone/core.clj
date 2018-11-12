@@ -73,5 +73,16 @@
 (defn login
   [& args]
   (println (apply (partial request americas em/doDeviceLogin) args)))
+
+
+;Add placeholder lines for new office
+(defn addLine
+  [& args]
+  (println  (request americas line/addLine (zipmap '(:line :description :loc) args))))
+
+;Associate placeholder lines with phones
+(defn updatePhone
+  [& args]
+  (println (apply (partial request americas phone/updatePhone) args)))
   
 
