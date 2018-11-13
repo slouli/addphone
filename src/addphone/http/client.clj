@@ -10,9 +10,7 @@
              {:basic-auth creds/creds
               :headers    {"Content-Type" "text/xml"
                            "SOAPAction"   (str "CUCM:DB ver=" ver " " method)}
-              :body       (cond
-                            (string? xml) xml
-                            :else (xml/emit-str (soap/soapBase ver xml)))
+              :body       (if (string? xml) xml (xml/emit-str (soap/soapBase ver xml)))
               :insecure?  true}
              (fn [{:keys [status headers body error]}]
                (str body error))))
@@ -23,9 +21,7 @@
     [link (cond
             (= (str ver) "8.5") (str "https://" ip ":8443/realtimeservice/services/RisPort70")
             (= (str ver) "10.5") (str "https://" ip ":8443/realtimeservice2/services/RISService70"))
-     body (cond
-            (string? xml) xml
-            :else (xml/emit-str xml))]
+     body (if (string? xml) xml (xml/emit-str xml))]
     (http/post link
                {:basic-auth creds/creds
                 :headers    {"Content-Type" "text/xml"
