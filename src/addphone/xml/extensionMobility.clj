@@ -12,7 +12,7 @@
           (xml/element :profileName {} userId)
           (xml/element :userId {} userId))})
 
-(defn doDeviceLog
+(defn doDeviceLogout
   "Function to log a user out of a device "
   [deviceName]
   {:name "doDeviceLogout"

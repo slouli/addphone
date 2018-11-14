@@ -40,8 +40,8 @@
   (userBase args
     (xml/element :phoneProfiles {}
       (xml/element :profileName {} userId))
-    (xml/element :defaultProfile {} userId)))  
-    
+    (xml/element :defaultProfile {} userId)))
+
 
 (defn updateUser
   [{:keys [userId line loc]}]
@@ -50,7 +50,4 @@
           (xml/element :userid {} userId)
           (xml/element :primaryExtension {}
             (xml/element :pattern {} line)
-            (xml/element :routePartitionName {} (str "PT-" loc "-Dev"))))})
-               
-              
-            
+            (xml/element :routePartitionName {} (str "PT-" loc "-Dev"))))})      
