@@ -78,7 +78,7 @@
 ;Add placeholder lines for new office
 (defn addLine
   [& args]
-  (println  (request americas line/addLine (zipmap '(:line :description :loc) args))))
+  (println  (request americas line/addLine (zipmap '(:line :description :loc :prime?) args))))
 
 ;Associate placeholder lines with phones
 (defn updatePhone
