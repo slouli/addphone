@@ -1,7 +1,8 @@
 (ns addphone.xml.user
   (:require [clojure.data.xml :as xml]
             [addphone.http.client :as client]
-            [addphone.xml.parseAxlResponse :as parse]))
+            [addphone.xml.parseAxlResponse :as parse]
+            [clojure.string :as str]))
 
 (defn getUser
   [userId]
@@ -10,12 +11,13 @@
                (xml/element :userid {} userId))})
 
 (defn userBase
-  [{:keys [userId line loc userLocale]} & userXml]
+  [{:keys [userId description line loc userLocale]} & userXml]
   {:name "addUser"
    :xml (xml/element :ns:addUser {:sequence "?"}
           (xml/element :user {}
             (xml/element :userid {} userId)
-            (xml/element :lastName {} userId) ;;lastname doesn't matter.  It just needs to be there until AD sync happens.
+            (xml/element :firstName {} (first (str/split description #" ")))
+            (xml/element :lastName {} (str/join (rest (str/split description #" "))))
             (xml/element :pin {} line)
             (xml/element :mailid {} (str userId "@opentext.com"))
             (xml/element :telephoneNumber {} (str "*1" line))
@@ -41,7 +43,6 @@
     (xml/element :phoneProfiles {}
       (xml/element :profileName {} userId))
     (xml/element :defaultProfile {} userId)))
-
 
 (defn updateUser
   [{:keys [userId line loc]}]

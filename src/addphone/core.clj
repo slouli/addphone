@@ -4,12 +4,14 @@
             [addphone.xml.line :as line]
             [addphone.xml.user :as user]
             [addphone.xml.phone :as phone]
+            [addphone.xml.transPattern :as transPattern]
             [addphone.xml.parseAxlResponse :as parse]
             [addphone.xml.extensionMobility :as em]
             [addphone.http.client :as client]
             [addphone.getResource :as rsc]))
 
 (def americas {:ip "10.230.154.5" :ver "10.5"})
+(def emea {:ip "10.145.34.51" :ver "10.5"})
 (def offices (rsc/getResource "offices.edn"))
 
 (defn request
@@ -49,8 +51,8 @@
       (false? proceed?) (println "Cannot proceed, verify the user/profile/extension are not already assigned")
       :else (do
               (println (request americas line/addLine phone))
-              (println (request americas deviceProfile/addDeviceProfile phone))
-              (println (request americas phone/addPhone phone))
+              (println (if (contains? phone :deviceProfile) (request americas deviceProfile/addDeviceProfile phone) "SKIP"))
+              (println (if (contains? phone :phone) (request americas phone/addPhone phone) "SKIP"))
               (println (request americas user/addUser phone))
               (println (request americas user/updateUser phone))
               (println)
@@ -84,5 +86,10 @@
 (defn updatePhone
   [& args]
   (println (apply (partial request americas phone/updatePhone) args)))
+
+;Add Translation Pattern
+(defn addTransPattern
+  [& args]
+  (println (apply (partial request americas transPattern/addTransPattern) args)))
   
 
