@@ -65,8 +65,25 @@
   [{:keys [mac line description loc e164Mask userLocale networkLocale] :as args}]
   (phoneBase args
     (xml/element :name {} (str "SEP" mac))))
-    
+
+
+(defmethod addPhone "7937"
+  [{:keys [mac description loc userLocale networkLocale] :as args}]
+  (phoneBase args
+    (xml/element :name {} (str "SEP" mac))
+    (xml/element :product {} "Cisco 7937")
+    (xml/element :mediaResourceListName {} "MRL-NA")
+    (xml/element :securityProfileName {} "Cisco 7937 - Standard SCCP Non-Secure Profile")))
+
+(defmethod addPhone "7945"
+  [{:keys [mac description loc userLocale networkLocale] :as args}]
+  (phoneBase args
+    (xml/element :name {} (str "SEP" mac))
+    (xml/element :product {} "Cisco 7945")
+    (xml/element :mediaResourceListName {} "MRL-NA")
+    (xml/element :securityProfileName {} "Cisco 7945 - Standard SIP Non-Secure Profile")))
   
+
 
 (defn updatePhone
   [name line loc description e164Mask]

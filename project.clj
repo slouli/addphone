@@ -6,7 +6,9 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [http-kit "2.2.0"]
                  [org.clojure/data.xml "0.0.8"]
-                 [org.clojure/data.zip "0.1.2"]]
+                 [org.clojure/data.zip "0.1.2"]
+                 [org.clojure/core.match "0.3.0"]
+                 [org.clojure/core.async "0.4.490"]]
   :main ^:skip-aot addphone.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

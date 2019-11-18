@@ -48,5 +48,3 @@
     (xml/element :product {} "Cisco 8851")
     (xml/element :phoneTemplateName {} "Standard 8851 SIP")
     (xml/element :softkeyTemplateName {} "OT - Standard User - AbbrDial")))
-  
-

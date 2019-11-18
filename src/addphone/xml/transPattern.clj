@@ -15,4 +15,14 @@
             (xml/element :callingSearchSpaceName {} (str "CSS-" loc "-Internal"))
             (xml/element :patternUrgency {} "true")
             (xml/element :blockEnable {} "false")
+            (xml/element :useCallingPartyPhoneMask {} "On")
             (xml/element :calledPartyTransformationMask {} dn)))})
+
+
+(defn updateTransPattern
+  [pattern pt dn]
+  {:name "updateTransPattern"
+   :xml (xml/element :ns:updateTransPattern {:sequence "?"}
+          (xml/element :pattern {} pattern)
+          (xml/element :routePartitionName {} pt)
+          (xml/element :calledPartyTransformationMask {} dn))})

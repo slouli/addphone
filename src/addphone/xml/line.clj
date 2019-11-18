@@ -10,7 +10,7 @@
                (xml/element :pattern {} line)
                (xml/element :routePartitionName {} (str "PT-" loc "-Dev")))})
 
-;;Get this from your home lab that is alreadyX created
+;;Get this from your home lab that is already created
 (defmulti addLine :prime?)
 
 (defn lineBase
@@ -29,41 +29,50 @@
 (defmethod addLine "prime"
   [{:keys [line description loc] :as args}]
   (lineBase args
-    (xml/element :shareLineAppearanceCssName {} (str "CSS-" loc "-National"))))
+    (xml/element :shareLineAppearanceCssName {} (str "CSS-" loc "-National"))
+    (xml/element :voiceMailProfileName {} "NoVoiceMail")))
 
-(defmethod addLine :default
+(defmethod addLine "conf"
   [{:keys [line description loc] :as args}]
   (lineBase args
+    (xml/element :shareLineAppearanceCssName {} (str "CSS-" loc "-International"))))
+    
+
+(defmethod addLine :default
+  [{:keys [line description loc cssLine cssCFWD cssCFWD2],
+    :or {cssLine (str "CSS-" loc "-International") cssCFWD (str "CSS-" loc "-National") cssCFWD2 (str "CSS-" loc "-Device")},
+    :as args}]
+  (lineBase args
     (xml/element :voiceMailProfileName {} "VoiceMail_NA")
-    (xml/element :shareLineAppearanceCssName {} (str "CSS-" loc "-International"))
+    (xml/element :shareLineAppearanceCssName {} cssLine)
     (xml/element :callForwardAll {}
       (xml/element :forwardToVoiceMail {} "false")
-      (xml/element :callingSearchSpaceName {} (str "CSS-" loc "-National"))
-      (xml/element :secondaryCallingSearchSpaceName {} (str "CSS-" loc "-Device")))
+      (xml/element :callingSearchSpaceName {} cssCFWD)
+      (xml/element :secondaryCallingSearchSpaceName {} cssCFWD2))
     (xml/element :callForwardBusy {}
       (xml/element :forwardToVoiceMail {} "true")
-      (xml/element :callingSearchSpaceName {} (str "CSS-" loc "-National")))
+      (xml/element :callingSearchSpaceName {} cssCFWD))
     (xml/element :callForwardBusyInt {}
       (xml/element :forwardToVoiceMail {} "true")
-      (xml/element :callingSearchSpaceName {} (str "CSS-" loc "-National")))
+      (xml/element :callingSearchSpaceName {} cssCFWD))
     (xml/element :callForwardNoAnswer {}
       (xml/element :forwardToVoiceMail {} "true")
-      (xml/element :callingSearchSpaceName {} (str "CSS-" loc "-National")))
+      (xml/element :callingSearchSpaceName {} cssCFWD))
     (xml/element :callForwardNoAnswerInt {}
       (xml/element :forwardToVoiceMail {} "true")
-      (xml/element :callingSearchSpaceName {} (str "CSS-" loc "-National")))
+      (xml/element :callingSearchSpaceName {} cssCFWD))
     (xml/element :callForwardNoCoverage {}
       (xml/element :forwardToVoiceMail {} "true")
-      (xml/element :callingSearchSpaceName {} (str "CSS-" loc "-National")))
+      (xml/element :callingSearchSpaceName {} cssCFWD))
     (xml/element :callForwardNoCoverageInt {}
       (xml/element :forwardToVoiceMail {} "true")
-      (xml/element :callingSearchSpaceName {} (str "CSS-" loc "-National")))
+      (xml/element :callingSearchSpaceName {} cssCFWD))
     (xml/element :callForwardOnFailure {}
       (xml/element :forwardToVoiceMail {} "true")
-      (xml/element :callingSearchSpaceName {} (str "CSS-" loc "-National")))
+      (xml/element :callingSearchSpaceName {} cssCFWD))
     (xml/element :callForwardNotRegistered {}
       (xml/element :forwardToVoiceMail {} "true")
-      (xml/element :callingSearchSpaceName {} (str "CSS-" loc "-National")))
+      (xml/element :callingSearchSpaceName {} cssCFWD))
     (xml/element :callForwardNotRegisteredInt {}
       (xml/element :forwardToVoiceMail {} "true")
-      (xml/element :callingSearchSpaceName {} (str "CSS-" loc "-National")))))
+      (xml/element :callingSearchSpaceName {} cssCFWD))))

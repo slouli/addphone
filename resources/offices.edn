@@ -1,8 +1,20 @@
-{:Austin {:e164Mask "51274XXXXX" :userLocale "English United States" :networkLocale "United States" :phone :IPC :deviceProfile :8851}
+{:Addison {:e164Mask "97264XXXXX" :userLocale "English United States" :networkLocale "United States" :phone :CSF :deviceProfile :8851}
+ :Alpharetta {:e164Mask "4044673000" :userLocale "English United States" :networkLocale "United States" :phone :CSF :deviceProfile :8851}
+ :Austin {:e164Mask "51274XXXXX" :userLocale "English United States" :networkLocale "United States" :phone :CSF :deviceProfile :8851}
+ :Hilliard {:e164Mask "614658XXXX" :userLocale "English United States" :networkLocale "United States" :phone :CSF :deviceProfile :8851} 
+ :Latham {:e164Mask "518220XXXX" :userLocale "English United States" :networkLocale "United States" :phone :CSF :deviceProfile :8851}
  :Montreal {:e164Mask "5149085406" :userLocale "French Canada" :networkLocale "Canada" :phone :CSF :deviceProfile :8851}
- :Pasadena {:e164Mask "6264637XXX" :userLocale "English United States" :networkLocale "United States" :phone :CSF}
- :RichmondHill {:e164Mask "90576XXXXX" :userLocale "English United States" :networkLocale "Canada" :phone :IPC :deviceProfile :7945}
- :SaoPaulo {:e164Mask "25360000" :userLocale "Portuguese Brazil" :networkLocale "Brazil" :phone :IPC :deviceProfile :7945}
- :Southfield {:e164Mask "24848XXXXX" :userLocale "English United States" :networkLocale "United States" :phone :IPC :deviceProfile :8851}
- :Toronto {:e164Mask "41695XXXXX" :userLocale "English United States" :networkLocale "Canada" :phone :IPC :deviceProfile :7945}}
+ :Norwood {:e164Mask "781949XXXX" :userLocale "English United States" :networkLocale "United States" :phone :CSF :deviceProfile :8851}
+ :Ottawa {:e164Mask "6132381761" :userLocale "English United States" :networkLocale "Canada" :phone :CSF :deviceProfile :7945}
+ :Pasadena {:e164Mask "6264637XXX" :userLocale "English United States" :networkLocale "United States" :phone :CSF :deviceProfile :8851}
+ :Pleasanton {:e164Mask "925688XXXX" :userLocale "English United States" :networkLocale "United States" :phone :CSF :deviceProfile :8851}
+ :RichmondHill {:e164Mask "90576XXXXX" :userLocale "English United States" :networkLocale "Canada" :phone :CSF :deviceProfile :7945}
+ :SanMateo {:e164Mask "6506453541" :userLocale "English United States" :networkLocale "United States" :phone :CSF :deviceProfile :8851}
+ :SaoPaulo {:e164Mask "25360000" :userLocale "Portuguese Brazil" :networkLocale "Brazil" :phone :CSF :deviceProfile :7945
+            :cssLine "CSS-SaoPaulo-International" :cssCFWD "CSS-SaoPaulo-Local" :cssCFWD2 "CSS-SaoPaulo-Device"}
+ :Southfield {:e164Mask "24848XXXXX" :userLocale "English United States" :networkLocale "United States" :phone :CSF :deviceProfile :8851}
+ :Tampa {:e164Mask "813639XXXX" :userLocale "English United States" :networkLocale "United States" :phone :CSF :deviceProfile :7945}
+ :Toronto {:e164Mask "41695XXXXX" :userLocale "English United States" :networkLocale "Canada" :phone :CSF :deviceProfile :7945}
+ :Tucson {:e164Mask "520320XXXX" :userLocale "English United States" :networkLocale "United States" :phone :CSF :deviceProfile :8851}
+ :Waterloo {:e164Mask "5198887111" :userLocale "English United States" :networkLocale "Canada" :phone :CSF :deviceProfile :7945}}
 

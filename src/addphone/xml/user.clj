@@ -17,17 +17,21 @@
           (xml/element :user {}
             (xml/element :userid {} userId)
             (xml/element :firstName {} (first (str/split description #" ")))
-            (xml/element :lastName {} (str/join (rest (str/split description #" "))))
+            (xml/element :lastName {} (str/join " " (rest (str/split description #" "))))
             (xml/element :pin {} line)
             (xml/element :mailid {} (str userId "@opentext.com"))
+            (xml/element :directoryUri {} (str userId "@opentext.com"))
             (xml/element :telephoneNumber {} (str "*1" line))
             (xml/element :userLocale {} userLocale)
             (xml/element :homeCluster {} "true")
+            (xml/element :serviceProfile {} "Cisco Jabber Service NA")
             (xml/element :subscribeCallingSearchSpaceName {} "CSS-Presence")
             userXml
             (xml/element :associatedGroups {}
               (xml/element :userGroup {} 
-                (xml/element :name {} "Standard CCM End Users")))))})
+                (xml/element :name {} "Standard CCM End Users"))
+              (xml/element :userGroup {} 
+                (xml/element :name {} "Standard CTI Enabled")))))})
 
 (defmulti addUser :phone)
 
@@ -35,7 +39,10 @@
   [{:keys [userId line loc userLocale] :as args}]
   (userBase args
     (xml/element :associatedDevices {}
-     (xml/element :device {} (str "CSF" userId)))))
+     (xml/element :device {} (str "CSF" userId)))
+    (xml/element :phoneProfiles {}
+      (xml/element :profileName {} userId))
+    (xml/element :defaultProfile {} userId)))
 
 (defmethod addUser :IPC
   [{:keys [userId line loc userLocale] :as args}]
@@ -43,6 +50,27 @@
     (xml/element :phoneProfiles {}
       (xml/element :profileName {} userId))
     (xml/element :defaultProfile {} userId)))
+
+(defmethod addUser :Telepresence
+  [{:keys [userId description line loc userLocale]} & userXml]
+  {:name "addUser"
+   :xml (xml/element :ns:addUser {:sequence "?"}
+          (xml/element :user {}
+            (xml/element :userid {} userId)
+            (xml/element :firstName {} (first (str/split description #" ")))
+            (xml/element :lastName {} (str/join " " (rest (str/split description #" "))))
+            (xml/element :pin {} line)
+            (xml/element :mailid {} (str userId "@opentext.com"))
+            (xml/element :directoryUri {} (str userId "@opentext.com"))
+            (xml/element :telephoneNumber {} (str "*1" line))
+            (xml/element :userLocale {} userLocale)
+            (xml/element :homeCluster {} "true")
+            (xml/element :serviceProfile {} "Jabber Voicemail Service")
+            (xml/element :subscribeCallingSearchSpaceName {} "CSS-Presence")
+            userXml
+            (xml/element :associatedGroups {}
+              (xml/element :userGroup {} 
+                (xml/element :name {} "Standard CCM End Users")))))})
 
 (defn updateUser
   [{:keys [userId line loc]}]
