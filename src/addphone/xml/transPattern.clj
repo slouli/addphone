@@ -4,7 +4,7 @@
 
 
 (defn addTransPattern
-  [pattern dn description pt loc]
+  [pattern dn description pt css]
   {:name "addTransPattern"
    :xml (xml/element :ns:addTransPattern {:sequence "?"}
           (xml/element :transPattern {}
@@ -12,7 +12,7 @@
             (xml/element :description {} description)
             (xml/element :usage {} "Translation")
             (xml/element :routePartitionName {} pt)
-            (xml/element :callingSearchSpaceName {} (str "CSS-" loc "-Internal"))
+            (xml/element :callingSearchSpaceName {} css)
             (xml/element :patternUrgency {} "true")
             (xml/element :blockEnable {} "false")
             (xml/element :useCallingPartyPhoneMask {} "On")

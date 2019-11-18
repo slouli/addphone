@@ -34,18 +34,24 @@
             [clojure.core.async :as async
              :refer [go chan buffer close! put! take! timeout]]))
 
+
 (def apac {:ip "10.230.210.51" :ver "10.5"})
 (def americas {:ip "10.230.154.5" :ver "10.5"})
-(def waterloo {:ip "10.2.92.50" :ver "8.5"})
 (def emea {:ip "10.145.34.51" :ver "10.5"})
 (def offices (rsc/getResource "offices.edn"))
 
+(def clusterMap
+  {:amer americas
+   :emea emea
+   :apac apac})   
+
 (defn request
-  [cluster func & args]
-  (let [funcmap (apply func args)
+  [clusterStr func & args]
+  (let [clusterNode ((keyword clusterStr) clusterMap) 
+        funcmap (apply func args)
         name (:name funcmap)
         xml (:xml funcmap)]
-   @(client/axl cluster name xml)))
+   @(client/axl clusterNode name xml)))
 
 (defn new_request
   [cluster func & args]
@@ -104,55 +110,39 @@
 
 
 
-;Extension mobility login function.  To run use:
-;lein run -m addphone.core/login name userId 
+;Extension mobility login function.  Example:
+;lein run -m addphone.core/login amer SEP2C31246C6B04 slouli 
 (defn login
-  [& args]
-  (println (apply (partial request americas em/doDeviceLogin) args)))
+  [cluster & args]
+  (println (apply (partial request cluster em/doDeviceLogin) args)))
 
+
+;Extension mobility logout function.  Example:
+;lein run -m addphone.core/logout amer SEP2C31246C6B04  
 (defn logout
-  [& args]
-  (println (apply (partial request americas em/doDeviceLogout) args)))
+  [cluster & args]
+  (println (apply (partial request cluster em/doDeviceLogout) args)))
 
-;Add phones to the new cluster
-(defn addPhone
-  [& args]
-  (println (request americas phone/addPhone (zipmap '(:mac :description :loc :userLocale :networklocale :phone) args))))
 
-;Add placeholder lines for new office
-(defn addLine
-  [& args]
-  (println  (request americas line/addLine (zipmap '(:line :description :loc :prime?) args))))
-
-;Add Translation Pattern
+;Add Translation Pattern.  Example:
+;lein run -m addphone.core/addTransPattern amer 111111111 60362 "Steve Translation" PT-RichmondHill-Dev CSS-RichmondHill-Internal
 (defn addTransPattern
-  [& args]
-  (println (apply (partial request americas transPattern/addTransPattern) args)))
+  [cluster & args]
+  (println (apply (partial request cluster transPattern/addTransPattern) args)))
 
-;Update Translation Pattern
-(defn updateTransPattern
-  [& args]
-  (let [transPatternList (rsc/getResource "translationPatternUpdate.edn")
-        requestfn (partial request americas transPattern/updateTransPattern)]
-    (doall
-      (println (map #(apply requestfn %) transPatternList)))))
 
-(defn doSpecialLogin
-  [& args]
-  (let [ipcList (rsc/getResource "ipcLogin.edn")
-        requestfn (partial request waterloo em/doDeviceLogin)]
-    (doall
-      (println (map #(apply requestfn %) ipcList)))))
-
+;Add devices to applicatin user "pguser".
+;Useful for bulk contact center updates where lots of searching and clicking would be necessary.
+;Example:
+;lein run addphone.core/addPgDevices amer CSFslouli CSFogonzal CSFjwarhurs CSF...
 (defn addPgDevices
-  [& deviceList]
-  (let [appuser "testapp"
-        newDevFile "pgUserDevices.edn"
-        targetCluster apac
-        currentAppUser (request targetCluster getAppUser/getAppUser appuser)
+  [cluster & deviceList]
+  (let [appuser "pguser"
+        ;;newDevFile "pgUserDevices.edn"
+        currentAppUser (request cluster getAppUser/getAppUser appuser)
         currentDevAssoc (getAppUser/parseGetAppUser currentAppUser)
-        newDevAssoc (distinct (concat currentDevAssoc (rsc/getResource newDevFile)))
-        requestfn (partial request targetCluster updateAppUser/updateAppUser appuser)]
+        newDevAssoc (distinct (concat currentDevAssoc deviceList))
+        requestfn (partial request cluster updateAppUser/updateAppUser appuser)]
     (println (apply requestfn newDevAssoc))))
 
 
