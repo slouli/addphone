@@ -124,13 +124,6 @@
   [& args]
   (println  (request americas line/addLine (zipmap '(:line :description :loc :prime?) args))))
 
-"""
-;Associate placeholder lines with phones
-(defn updatePhone
-  [& args]
-  (println (apply (partial request americas phone/updatePhone) args)))
-"""
-
 ;Add Translation Pattern
 (defn addTransPattern
   [& args]
@@ -150,24 +143,6 @@
         requestfn (partial request waterloo em/doDeviceLogin)]
     (doall
       (println (map #(apply requestfn %) ipcList)))))
-
-(defn updateAlpharetta
-  [& args]
-  (let [updatePhoneList (rsc/getResource "updateAlpharetta.edn")
-        requestfn (partial request americas updatePhone/updatePhone)]
-    (println (map #(apply requestfn %) updatePhoneList))))
-
-(defn updateAlpharettaDp
-  [& args]
-  (let [updatePhoneList (rsc/getResource "updateAlpharetta.edn")
-        requestfn (partial request americas updateDeviceProfile/updateDeviceProfile)]
-    (println (map #(apply requestfn %) updatePhoneList))))
-
-(defn updateAlpharettaUsers
-  [& args]
-  (let [updatePhoneList (rsc/getResource "updateAlpharetta.edn")
-        requestfn (partial request americas updateUser/updateUser)]
-    (println (map #(requestfn (first %)) updatePhoneList))))
 
 (defn addPgDevices
   [& deviceList]
@@ -208,37 +183,3 @@
   ;;(println (first newCssList)))
   ;;(println newCssList))
   (println (map #(apply (partial request americas updateCss/updateCss) %) newCssList)))
-  
-
-(defn balanceVc
-  [& args]
-  (def americasAllVc (new_request americas listUser/listUserGeneral {:userIdPrefix "vc-"}))
-  (def emeaAllVc (new_request emea listUser/listUserGeneral {:userIdPrefix "vc-"}))
-  (def apacAllVc (new_request apac listUser/listUserGeneral {:userIdPrefix "vc-"}))
-  
-  (defn stripHomed
-    [vcElement]
-    [(vcElement 0) (vcElement 2) (vcElement 3) (vcElement 4)])
-    
-  ;For comprehensions would have been nicer here.  Maybe rewrite sometime.
-  (def americasHomedVcs (set (map stripHomed (filter #(= "true" (% 1)) americasAllVc))))
-  (def emeaHomedVcs (set (map stripHomed (filter #(= "true" (% 1)) emeaAllVc))))
-  (def apacHomedVcs (set (map stripHomed (filter #(= "true" (% 1)) apacAllVc))))
-  
-  (def americasAllVcNoHome (set (map stripHomed americasAllVc)))
-  (def emeaAllVcNoHome(set (map stripHomed emeaAllVc)))
-  (def apacAllVcNoHome (set (map stripHomed apacAllVc)))
-  
-  (def allVcUnits (union americasHomedVcs emeaHomedVcs apacHomedVcs))
-  (def missingAmericas (difference allVcUnits americasAllVcNoHome))
-  (def missingEMEA (difference allVcUnits emeaAllVcNoHome))
-  (def missingAPAC (difference allVcUnits apacAllVcNoHome))
-  (println missingAmericas)
-  (println)
-  (println missingEMEA)
-  (println)
-  (println missingAPAC))
-  ;(println (difference americasAllVcNoHome americasHomedVcs americasHomedVcs)))
-  ;(println (difference americasHomedVcs emeaHomedVcs)))
- 
-
