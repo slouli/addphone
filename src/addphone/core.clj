@@ -628,7 +628,7 @@
       (async/take! updateUserChan updateEndUser)))
   
   (while true
-    (Thread/sleep 60000))
+    (Thread/sleep 60000)))
   
   
   
@@ -644,32 +644,3 @@
   ;;How do we get external number masks... FUC
   
   ;;Test Jabber Creation
-  
-  
-  (comment
-    (println
-      (map (partial clusterRequest addPhone/addPhone) 
-        (map conj testDevs (repeat {:networkLocale "Canada" 
-                                    :css "CSS-Toronto-Device" 
-                                    :devicePool "DP-Toronto" 
-                                    :location "Loc-Toronto"})))))
-  
-  (comment
-    (println (addPhone/addPhone {:name "CSFslouliTest" 
-                                 :description "Test ACCT" 
-                                 :devicePool "DP-Toronto"
-                                 :css "CSS-Toronto-Device" 
-                                 :location "Loc-Toronto"
-                                 :userLocale "English United States"
-                                 :networkLocale "Canada"
-                                 :lines '(["1" "60362" "PT-Toronto-Dev" "Steve Louli" "416956XXXX"]
-                                          ["2" "60368" "PT-Toronto-Dev" "Steve Louli" "416956XXXX"])})))
-  
-  (comment 
-    Cool but, legacy code for filtering userList.  New code is much simpler with maps
-    (def jabberUsers (for [user allUsersList
-                           :let [vecu (into [] user)]
-                           :when (= (match vecu
-                                      [userid _ _ "true" "1" _ _] (nil? (some #(= % userid) rejectUsers))
-                                      :else false) true)
-                           (reverse (into '() vecu))]))))
