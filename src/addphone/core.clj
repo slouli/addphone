@@ -5,7 +5,7 @@
             [addphone.xml.user :as user]
             [addphone.xml.phone :as phone]
             [addphone.xml.transPattern :as transPattern]
-            [addphone.xml.parseAxlResponse :as parse]
+            [addphone.xml.parseAxlResponse :as parseResp]
             [addphone.xml.extensionMobility :as em]
             [addphone.xml.listUser :as listUser]
             [addphone.xml.listCss :as listCss]
@@ -27,6 +27,7 @@
             [addphone.xml.updatePhone :as updatePhone]
             [addphone.http.client :as client]
             [addphone.getResource :as rsc]
+            [addphone.utilities.parsers :as parse]
             [clojure.core.match :refer [match]]
             [clojure.set :refer [difference union]]
             [clojure.data :as data]
@@ -75,10 +76,10 @@
   (let [argmap (zipmap '(:userId :description :line :loc) args)  ;Create hashmap of inputs from cmdline
         officeMap ((keyword (:loc argmap)) offices)              ;Get office hashmap
         phone (merge argmap officeMap)                           ;Merge data into one map
-        userExists? (fn [userId] (parse/exists? (request cluster user/getUser userId)))
-        lineExists? (fn [line pt] (parse/exists? (request cluster line/getLine line pt)))
-        deviceProfileExists? (fn [userId] (parse/exists? (request cluster deviceProfile/getDeviceProfile userId)))
-        phoneExists? (fn [name] (parse/exists? (request cluster phone/getPhone name)))]
+        userExists? (fn [userId] (parseResp/exists? (request cluster user/getUser userId)))
+        lineExists? (fn [line pt] (parseResp/exists? (request cluster line/getLine line pt)))
+        deviceProfileExists? (fn [userId] (parseResp/exists? (request cluster deviceProfile/getDeviceProfile userId)))
+        phoneExists? (fn [name] (parseResp/exists? (request cluster phone/getPhone name)))]
     
     (def proceed?
       (every? false? (list 
@@ -139,20 +140,22 @@
   [cluster & deviceList]
   (let [appuser "pguser"
         ;;newDevFile "pgUserDevices.edn"
-        currentAppUser (request cluster getAppUser/getAppUser appuser)
-        currentDevAssoc (getAppUser/parseGetAppUser currentAppUser)
+        appUserXml (request cluster getAppUser/getAppUser appuser)
+        currentDevAssoc (parse/getAppUser appUserXml)
         newDevAssoc (distinct (concat currentDevAssoc deviceList))
         requestfn (partial request cluster updateAppUser/updateAppUser appuser)]
     (do
-      (println newDevAssoc)
+      ;;(println newDevAssoc)
       (println (apply requestfn newDevAssoc)))))
 
 
 (defn addDeviceCss
-  [cssName]
-  (def ptList 
-    (listRoutePartition/parseListRoutePartition (request americas listRoutePartition/listRoutePartition)))
-  (println (apply (partial request americas addCss/addCss cssName) ptList)))
+  [cluster cssName]
+  (let [ptListXml (request cluster listRoutePartition/listRoutePartition "PT-%-Dev")
+        ptList (parse/listRoutePartition ptListXml)]
+    (do
+      ;;(println ptList)
+      (println (apply (partial request americas addCss/addCss cssName) ptList)))))
   
 
 (defn udpateDeviceCss
@@ -165,13 +168,11 @@
   
   Finally, the new calling search spaces stored in newCssList are sent to the call manager.
   "
-  [& newPts]
-  (def cssList (listCss/parseListCss (request americas listCss/listCss "%Device%")))
+  [cluster & newPts]
+  (def cssList (parse/listCss (request cluster listCss/listCss "%Device%")))
   ;;(println (request americas updateCss/updateCss "CSS-Test" "PT-Addison-Dev" "PT-APAC-Outbound"))
-  (def curCssList (map #(getCss/parseGetCss (request americas getCss/getCss %)) cssList))
+  (def curCssList (map #(parse/getCss (request cluster getCss/getCss %)) cssList))
   (def newCssList (map #(distinct (concat %1 %2)) curCssList (repeat newPts)))
-  ;;(println (request americas getCss/getCss "CSS-Toronto-Device"))
-  ;;(println (first curCssList)))
-  ;;(println (first newCssList)))
-  ;;(println newCssList))
-  (println (map #(apply (partial request americas updateCss/updateCss) %) newCssList)))
+  (do
+    ;;(println newCssList)
+    (println (map #(apply (partial request americas updateCss/updateCss) %) newCssList))))

@@ -6,12 +6,6 @@
             [clojure.data.zip.xml :as zip-xml]
             [addphone.utilities.zip :refer [zipify]]))
 
-(defn parseListCss
-  [xmlResp]
-  (let [zipper (zipify xmlResp)
-        cssNameList (zip-xml/xml-> zipper :Envelope :Body :listCssResponse
-                      :return :css :name zip-xml/text)]
-    cssNameList))
 
 (defn listCss
   "Eventually should make parameters a map that takes named args"

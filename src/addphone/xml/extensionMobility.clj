@@ -13,7 +13,7 @@
           (xml/element :userId {} userId))})
 
 (defn doDeviceLogout
-  "Function to log a user out of a device "
+  "Function to log a user out of a device"
   [deviceName]
   {:name "doDeviceLogout"
    :xml (xml/element :ns:doDeviceLogout {:sequence "?"}

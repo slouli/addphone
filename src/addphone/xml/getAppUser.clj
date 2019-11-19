@@ -6,16 +6,6 @@
             [clojure.data.zip.xml :as zip-xml]
             [addphone.utilities.zip :refer [zipify]]))
 
-
-(defn parseGetAppUser
-  [xmlResp]
-  (let [zipper (zipify xmlResp)
-        name (zip-xml/xml1-> zipper :Envelope :Body :getAppUserResponse
-               :return :appUser :userid zip-xml/text)
-        deviceList (zip-xml/xml-> zipper :Envelope :Body :getAppUserResponse
-                     :return :appUser :associatedDevices :device zip-xml/text)]
-    deviceList))
-
 (defn getAppUser
   [userid]
   {:name "getAppUser"

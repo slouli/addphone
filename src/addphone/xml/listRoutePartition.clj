@@ -7,19 +7,12 @@
             [addphone.utilities.zip :refer [zipify]]))
 
 
-(defn parseListRoutePartition
-  [xmlResp]
-  (let [zipper (zipify xmlResp)
-        ptNameList (zip-xml/xml-> zipper :Envelope :Body :listRoutePartitionResponse
-                     :return :routePartition :name zip-xml/text)]
-    ptNameList))
-
 (defn listRoutePartition
   "Eventually should make parameters a map that takes named args"
-  [& searchCriteria]
+  [searchCriteria]
   {:name "listRoutePartition"
    :xml (xml/element :ns:listRoutePartition {:sequence "?"}
           (xml/element :searchCriteria {}
-            (xml/element :name {} "PT-%-Dev"))
+            (xml/element :name {} searchCriteria))
           (xml/element :returnedTags {:uuid "?"}
             (xml/element :name {})))})
