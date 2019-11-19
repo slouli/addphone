@@ -4,11 +4,8 @@
             [addphone.xml.parseAxlResponse :as parse]
             [clojure.string :as str]
             [clojure.data.zip.xml :as zip-xml]
-            [clojure.zip :as zip]))
+            [addphone.utilities.zip :refer [zipify]]))
 
-(defn zipify
-  [resp]
-  (zip/xml-zip (xml/parse-str resp)))
 
 (defn parseListRoutePartition
   [xmlResp]

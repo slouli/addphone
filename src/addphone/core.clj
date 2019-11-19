@@ -71,14 +71,14 @@
 
 (defn -main
   "I create the device profile/end user account/jabber accounts for new user onboarding"
-  [& args]
+  [cluster & args]
   (let [argmap (zipmap '(:userId :description :line :loc) args)  ;Create hashmap of inputs from cmdline
         officeMap ((keyword (:loc argmap)) offices)              ;Get office hashmap
         phone (merge argmap officeMap)                           ;Merge data into one map
-        userExists? (fn [userId] (parse/exists? (request americas user/getUser userId)))
-        lineExists? (fn [line pt] (parse/exists? (request americas line/getLine line pt)))
-        deviceProfileExists? (fn [userId] (parse/exists? (request americas deviceProfile/getDeviceProfile userId)))
-        phoneExists? (fn [name] (parse/exists? (request americas phone/getPhone name)))]
+        userExists? (fn [userId] (parse/exists? (request cluster user/getUser userId)))
+        lineExists? (fn [line pt] (parse/exists? (request cluster line/getLine line pt)))
+        deviceProfileExists? (fn [userId] (parse/exists? (request cluster deviceProfile/getDeviceProfile userId)))
+        phoneExists? (fn [name] (parse/exists? (request cluster phone/getPhone name)))]
     
     (def proceed?
       (every? false? (list 
@@ -90,11 +90,11 @@
     (cond 
       (false? proceed?) (println "Cannot proceed, verify the user/profile/extension are not already assigned")
       :else (do
-              (println (request americas line/addLine phone))
-              (println (if (contains? phone :deviceProfile) (request americas deviceProfile/addDeviceProfile phone) "SKIP"))
-              (println (if (contains? phone :phone) (request americas phone/addPhone phone) "SKIP"))
-              (println (request americas user/addUser phone))
-              (println (request americas user/updateUser phone))
+              (println (request cluster line/addLine phone))
+              (println (if (contains? phone :deviceProfile) (request cluster deviceProfile/addDeviceProfile phone) "SKIP"))
+              (println (if (contains? phone :phone) (request cluster phone/addPhone phone) "SKIP"))
+              (println (request cluster user/addUser phone))
+              (println (request cluster user/updateUser phone))
               (println)
               (println "User Detail...")
               (println "UserId: " (:userId phone))
@@ -143,7 +143,9 @@
         currentDevAssoc (getAppUser/parseGetAppUser currentAppUser)
         newDevAssoc (distinct (concat currentDevAssoc deviceList))
         requestfn (partial request cluster updateAppUser/updateAppUser appuser)]
-    (println (apply requestfn newDevAssoc))))
+    (do
+      (println newDevAssoc)
+      (println (apply requestfn newDevAssoc)))))
 
 
 (defn addDeviceCss

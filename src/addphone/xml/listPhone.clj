@@ -4,7 +4,7 @@
             [addphone.xml.parseAxlResponse :as parse]
             [clojure.string :as str]
             [clojure.data.zip.xml :as zip-xml]
-            [clojure.zip :as zip]))
+            [addphone.utilities.zip :refer [zipify]]))
 
 (defn listPhone
   [& userXml]
@@ -15,10 +15,6 @@
           (xml/element :returnedTags {}
             (xml/element :name {})))})
 
-
-(defn zipify
-  [resp]
-  (zip/xml-zip (xml/parse-str resp)))
 
 (defn parseListPhoneSql
   [xmlResp]
