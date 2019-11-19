@@ -62,54 +62,10 @@
         parseFn (:parse funcmap)]
    (parseFn @(client/axl cluster name xml))))
 
-(defn echo
-  [msg f & args]
-  (do
-    (print msg)
-    (def result (apply f args))
-    (println result)
-    result))
 
 (defn -main
-  "I create the device profile/end user account/jabber accounts for new user onboarding"
-  [cluster & args]
-  (let [argmap (zipmap '(:userId :description :line :loc) args)  ;Create hashmap of inputs from cmdline
-        officeMap ((keyword (:loc argmap)) offices)              ;Get office hashmap
-        phone (merge argmap officeMap)                           ;Merge data into one map
-        userExists? (fn [userId] (parseResp/exists? (request cluster user/getUser userId)))
-        lineExists? (fn [line pt] (parseResp/exists? (request cluster line/getLine line pt)))
-        deviceProfileExists? (fn [userId] (parseResp/exists? (request cluster deviceProfile/getDeviceProfile userId)))
-        phoneExists? (fn [name] (parseResp/exists? (request cluster phone/getPhone name)))]
-    
-    (def proceed?
-      (every? false? (list 
-                       (echo "Checking if user exists... " userExists? (:userId argmap))
-                       (echo "Checking if line exists... " lineExists? (:line argmap) (:loc argmap))
-                       (echo "Checking if device profile exists... " deviceProfileExists? (:userId argmap))
-                       (echo "Checking if Jabber phone exists... " phoneExists? (str "CSF" (:userId argmap)))
-                       (echo "Checking if IPC phone exists... " phoneExists? (str "SEP" (:userId argmap))))))
-    (cond 
-      (false? proceed?) (println "Cannot proceed, verify the user/profile/extension are not already assigned")
-      :else (do
-              (println (request cluster line/addLine phone))
-              (println (if (contains? phone :deviceProfile) (request cluster deviceProfile/addDeviceProfile phone) "SKIP"))
-              (println (if (contains? phone :phone) (request cluster phone/addPhone phone) "SKIP"))
-              (println (request cluster user/addUser phone))
-              (println (request cluster user/updateUser phone))
-              (println)
-              (println "User Detail...")
-              (println "UserId: " (:userId phone))
-              (println "Ext/PIN: " (:line phone))
-              (println)
-              (println "IPC Details")
-              (println "-IP Communicator: " (str "SEP" (:userId phone)))
-              (println "-TFTP Server 1: " "10.230.122.5")
-              (println "-TFTP Server 2: " "10.230.154.6")
-              (println)
-              (println "Voicemail PIN: 258369")
-              (println (str "set-aduser " (:userId phone) " -replace @{'ipPhone'='*1" (:line phone) "'}"))))))
-
-
+  "I do nothing by default.  Specify one of my functions below"
+  [& args])
 
 ;Extension mobility login function.  Example:
 ;lein run -m addphone.core/login amer SEP2C31246C6B04 slouli 
