@@ -32,6 +32,7 @@
             [clojure.set :refer [difference union]]
             [clojure.data :as data]
             [clojure.data.xml :as xml]
+            [clojure.pprint :as pp]
             [clojure.core.async :as async
              :refer [go chan buffer close! put! take! timeout]]))
 
@@ -105,14 +106,49 @@
       (println (apply requestfn newDevAssoc)))))
 
 
+(defn tableConv
+  "
+  Converts a list of the format:
+  (CSS-Loc-Dev PT1 PT2...) (CSS_NewLoc-Dev PT1 PT2...) to a list of hash maps
+  ({:CSS-Loc-Dev PT1 :CSS-NewLoc-Dev PT1} {:CSS-Loc-Dev PT1 PT2 ...} ...)
+  Since there will be unbalanced lists between the old and new, the extra rows
+  for the old PT will list 'NEW' to indicate that that row is a new entry.
+  "
+  [oldCssList newCssList]
+  (let [oldKeyword (keyword (str "OLD_" (first oldCssList)))
+        newKeyword (keyword (str "NEW_" (first newCssList)))
+        oldTable (for [pt (rest oldCssList)
+                       :let [y {oldKeyword pt}]]
+                   y)
+        newTable (for [pt (rest newCssList)
+                       :let [y {newKeyword pt}]]
+                   y)]
+    (map conj 
+      (concat oldTable (repeat {oldKeyword "NEW"})) 
+      newTable)))
+
+
 (defn addDeviceCss
-  [cluster cssName]
-  (let [ptListXml (request cluster listRoutePartition/listRoutePartition "PT-%-Dev")
-        ptList (parse/listRoutePartition ptListXml)]
+  [cluster cssName & ptQueries]
+  (let [ptGetRequest (partial request cluster listRoutePartition/listRoutePartition)
+        addRequest (partial request cluster addCss/addCss cssName)
+        ptList (loop [findPts ptQueries
+                      foundPts '()]
+                 (cond
+                   (empty? findPts) foundPts
+                   :else (recur 
+                           (rest findPts) 
+                           (distinct (concat foundPts (parse/listRoutePartition (ptGetRequest (first findPts))))))))]
     (do
-      ;;(println ptList)
-      (println (apply (partial request americas addCss/addCss cssName) ptList)))))
-  
+      (def table (tableConv (list cssName) (conj ptList cssName)))
+      (pp/print-table table)
+      (print "Execute this change? [n]: ")
+      (flush)
+      (def userInput (read-line))
+      (cond
+        (= userInput "y") (println (apply addRequest ptList))
+        :else (println "Did not execute the change.")))))
+
 
 (defn udpateDeviceCss
   "
@@ -124,11 +160,17 @@
   
   Finally, the new calling search spaces stored in newCssList are sent to the call manager.
   "
-  [cluster & newPts]
-  (def cssList (parse/listCss (request cluster listCss/listCss "%Device%")))
-  ;;(println (request americas updateCss/updateCss "CSS-Test" "PT-Addison-Dev" "PT-APAC-Outbound"))
-  (def curCssList (map #(parse/getCss (request cluster getCss/getCss %)) cssList))
-  (def newCssList (map #(distinct (concat %1 %2)) curCssList (repeat newPts)))
-  (do
-    ;;(println newCssList)
-    (println (map #(apply (partial request americas updateCss/updateCss) %) newCssList))))
+  [cluster cssFilter & newPts]
+  (let [cssList (parse/listCss (request cluster listCss/listCss cssFilter))
+        curCssList (map #(parse/getCss (request cluster getCss/getCss %)) cssList)
+        newCssList (map #(distinct (concat %1 %2)) curCssList (repeat newPts))
+        updateRequest (partial request cluster updateCss/updateCss)]
+    (do
+      (def tables (map #(tableConv %1 %2) curCssList newCssList))
+      (doall (map #(pp/print-table %) tables))
+      (print "Execute this change? [n]: ")
+      (flush)
+      (def userInput (read-line))
+      (cond
+        (= userInput "y") (println (map #(apply updateRequest %) newCssList))
+        :else (println "Did not execute the change.")))))
