@@ -28,13 +28,10 @@
             [addphone.http.client :as client]
             [addphone.getResource :as rsc]
             [addphone.utilities.parsers :as parse]
-            [clojure.core.match :refer [match]]
             [clojure.set :refer [difference union]]
             [clojure.data :as data]
             [clojure.data.xml :as xml]
-            [clojure.pprint :as pp]
-            [clojure.core.async :as async
-             :refer [go chan buffer close! put! take! timeout]]))
+            [clojure.pprint :as pp]))
 
 
 (def apac {:ip "10.230.210.51" :ver "10.5"})
@@ -63,10 +60,11 @@
         parseFn (:parse funcmap)]
    (parseFn @(client/axl cluster name xml))))
 
+(comment
+  (defn -main
+    "I do nothing by default.  Specify one of my functions below"
+    [& args]))
 
-(defn -main
-  "I do nothing by default.  Specify one of my functions below"
-  [& args])
 
 ;Extension mobility login function.  Example:
 ;lein run -m addphone.core/login amer SEP2C31246C6B04 slouli 
@@ -128,17 +126,22 @@
       newTable)))
 
 
+(defn getPartitions
+  [cluster & pts]
+  (let [ptGetRequest (partial request cluster listRoutePartition/listRoutePartition)]
+    (loop [findPts pts
+           foundPts '()]
+      (cond
+        (empty? findPts) foundPts
+        :else (recur 
+                (rest findPts)
+                (distinct (concat foundPts (parse/listRoutePartition (ptGetRequest (first findPts))))))))))
+
+
 (defn addDeviceCss
   [cluster cssName & ptQueries]
-  (let [ptGetRequest (partial request cluster listRoutePartition/listRoutePartition)
-        addRequest (partial request cluster addCss/addCss cssName)
-        ptList (loop [findPts ptQueries
-                      foundPts '()]
-                 (cond
-                   (empty? findPts) foundPts
-                   :else (recur 
-                           (rest findPts) 
-                           (distinct (concat foundPts (parse/listRoutePartition (ptGetRequest (first findPts))))))))]
+  (let [addRequest (partial request cluster addCss/addCss cssName)
+        ptList (apply (partial getPartitions cluster) ptQueries)]
     (do
       (def table (tableConv (list cssName) (conj ptList cssName)))
       (pp/print-table table)
@@ -150,7 +153,7 @@
         :else (println "Did not execute the change.")))))
 
 
-(defn udpateDeviceCss
+(defn updateDeviceCss
   "
   Updates the Calling Search Spaces polled by listCss API function call.  The steps below are:
   -cssList: Gets the existing Calling Search Spaces, filtered by CSSs' containing '%Device%' in the name'
@@ -160,10 +163,11 @@
   
   Finally, the new calling search spaces stored in newCssList are sent to the call manager.
   "
-  [cluster cssFilter & newPts]
+  [cluster cssFilter & ptQueries]
   (let [cssList (parse/listCss (request cluster listCss/listCss cssFilter))
         curCssList (map #(parse/getCss (request cluster getCss/getCss %)) cssList)
-        newCssList (map #(distinct (concat %1 %2)) curCssList (repeat newPts))
+        ptList (apply (partial getPartitions cluster) ptQueries)
+        newCssList (map #(distinct (concat %1 %2)) curCssList (repeat ptList))
         updateRequest (partial request cluster updateCss/updateCss)]
     (do
       (def tables (map #(tableConv %1 %2) curCssList newCssList))
