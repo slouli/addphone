@@ -39,10 +39,12 @@
 (def emea {:ip "10.145.34.51" :ver "10.5"})
 (def offices (rsc/getResource "offices.edn"))
 
+
 (def clusterMap
   {:amer americas
    :emea emea
    :apac apac})   
+
 
 (defn request
   [clusterStr func & args]
@@ -52,6 +54,7 @@
         xml (:xml funcmap)]
    @(client/axl clusterNode name xml)))
 
+
 (defn new_request
   [cluster func & args]
   (let [funcmap (apply func args)
@@ -59,6 +62,7 @@
         xml (:xml funcmap)
         parseFn (:parse funcmap)]
    (parseFn @(client/axl cluster name xml))))
+
 
 (comment
   (defn -main
