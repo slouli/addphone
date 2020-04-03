@@ -20,9 +20,8 @@
 
 
 (defn updateTransPattern
-  [pattern pt dn]
+  [pattern pt]
   {:name "updateTransPattern"
    :xml (xml/element :ns:updateTransPattern {:sequence "?"}
           (xml/element :pattern {} pattern)
-          (xml/element :routePartitionName {} pt)
-          (xml/element :calledPartyTransformationMask {} dn))})
+          (xml/element :routePartitionName {} pt))})

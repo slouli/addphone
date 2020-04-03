@@ -38,6 +38,7 @@
 (def americas {:ip "10.230.154.5" :ver "10.5"})
 (def emea {:ip "10.145.34.51" :ver "10.5"})
 (def offices (rsc/getResource "offices.edn"))
+(def tranPatternEdn (rsc/getResource "transPatternUpdate.edn"))
 
 
 (def clusterMap
@@ -90,6 +91,9 @@
   [cluster & args]
   (println (apply (partial request cluster transPattern/addTransPattern) args)))
 
+(def updateTransPattern
+  (map #(apply (partial request amer transPattern/updateTransPattern) %) tranPatternEdn))
+  
 
 ;Add devices to applicatin user "pguser".
 ;Useful for bulk contact center updates where lots of searching and clicking would be necessary.
